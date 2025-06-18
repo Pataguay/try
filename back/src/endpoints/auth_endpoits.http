@@ -1,0 +1,89 @@
+### Realizar cadastro do tipo Cliente
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluan11@pm.me",
+  "password": "teste123456",
+  "role": "cliente",
+  "cpf": "12345667817171"
+}
+
+### Realizar login - Cliente
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "guilhermeluan11@pm.me",
+  "password": "teste123456"
+}
+
+### Realizar cadastro do tipo Produtor
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluanprodutor11@pm.me",
+  "password": "teste123456",
+  "role": "produtor",
+  "cnpj": "12345667817111271"
+}
+
+### Realizar cadastro do tipo Entregador com Bicicleta
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluan@gmail.com",
+  "password": "teste123456",
+  "role": "entregador",
+  "cpf": "123123121",
+  "vehicleType": "BICYCLE"
+}
+
+### Realizar cadastro do tipo Entregador com Moto
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluan11@gmail.com",
+  "password": "teste123456",
+  "role": "entregador",
+  "cpf": "1231231211",
+  "cnh": "123456678171127",
+  "vehicleType": "MOTORCYCLE"
+}
+### Realizar login - Produtor
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "guilhermeluanprodutor11@pm.me",
+  "password": "teste123456"
+}
+
+### Buscar usuários
+GET http://localhost:3000/user
+
+
+### Buscar usuário pelo email (sem encoding)
+GET http://localhost:3000/user?email=guilhermeluan@pm.me
+
+### Buscar usuário pelo id
+GET http://localhost:3000/user/3
+
+### Modifcar
+PATCH http://localhost:3000/user/3
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan Reis"
+}
+
+### Deletar usuario
+DELETE http://localhost:3000/user/2
+

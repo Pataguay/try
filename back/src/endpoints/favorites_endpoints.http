@@ -1,0 +1,20 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsInVzZXIiOiJndWlsaGVybWVsdWFuMTFAcG0ubWUiLCJyb2xlIjoiY2xpZW50ZSIsImlhdCI6MTc0OTE0NTcxNSwiZXhwIjoxNzQ5MTQ5MzE1fQ.c8tZpWemour5OJdzw5Vb2E6l-1QitdWrlXOfiGz96TE
+@base_url=http://localhost:3000
+
+### Adicionar aos favoritos
+POST {{base_url}}/favorites
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "productId": 2
+}
+
+### Listar favoritos do usuário Autenticado
+GET {{base_url}}/favorites
+Authorization: Bearer {{token}}
+
+### Deletar favorito
+DELETE {{base_url}}/favorites/16
+Authorization: Bearer {{token}}
+Content-Type: application/json

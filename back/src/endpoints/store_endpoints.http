@@ -1,0 +1,37 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXIiOiJndWlsaGVybWVsdWFucHJvZHV0b3IxMUBwbS5tZSIsInJvbGUiOiJwcm9kdXRvciIsImlhdCI6MTc0ODg5MjAyOCwiZXhwIjoxNzQ4ODk1NjI4fQ.SQiwUB9wSbBav-9nlkDiffzriGoCYpuZf5iEHD5sWb8
+
+### Criar uma nova loja
+
+POST http://localhost:3000/store
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Loja do Zé",
+  "description": "Frutas e verduras frescas direto da horta.",
+  "producerProfileId": 1
+}
+
+### Buscar todas as lojas
+GET http://localhost:3000/store
+
+### Buscar uma loja pelo ID
+GET http://localhost:3000/store/1
+
+### Atualizar uma loja
+PATCH http://localhost:3000/store/1
+Content-Type: application/json
+//Authorization: Bearer {{token}} // Adicione o token de autenticação aqui
+
+{
+  "name": "Loja do Zé Atualizada",
+  "description": "As melhores frutas e verduras da região.",
+  "rating": 4.5
+}
+
+### Deletar uma loja
+DELETE http://localhost:3000/store/1
+//Authorization: Bearer {{token}} // Adicione o token de autenticação aqui
+
+### Buscar produtos de uma loja pelo ID da loja
+GET http://localhost:3000/store/1/products

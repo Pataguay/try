@@ -1,0 +1,74 @@
+@token_client=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXIiOiJndWlsaGVybWVsdWFuQHBtLm1lIiwicm9sZSI6ImNsaWVudGUiLCJpYXQiOjE3NDkwNzE4OTAsImV4cCI6MTc0OTA3NTQ5MH0.izaTFK7c5aPZ_jbJ3-FX6qr1hJNfQHSR4uA0OnGf0O8
+@baseurl=http://localhost:3000
+
+### Registro de cliente
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluan@pm.me",
+  "password": "teste123456",
+  "role": "cliente",
+  "cpf": "123456678177"
+}
+
+### Login
+POST {{baseurl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "guilhermeluan@pm.me",
+  "password": "teste123456"
+}
+
+### Buscar produtos
+GET {{baseurl}}/products
+
+### Detalhe do produto
+GET {{baseurl}}/products/1
+
+### Adicionar ao carinho
+POST {{baseurl}}/cart/add
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+### Ver o carrinho do cliente
+
+GET {{baseurl}}/cart
+Authorization: Bearer {{token_client}}
+
+### Adicionar endereço de entrega para o client logado
+POST {{baseurl}}/address
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "street": "Rua das Flores",
+  "number": "123",
+  "complement": "Apto 101",
+  "city": "São Paulo",
+  "state": "SP",
+  "postalCode": "01234-567"
+}
+
+### Pagamento
+
+POST {{baseurl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "paymentMethod": "CREDIT_CARD"
+}
+
+### Status
+GET {{baseurl}}/orders
+Authorization: Bearer {{token_client}}
+
+### Avaliar comprar

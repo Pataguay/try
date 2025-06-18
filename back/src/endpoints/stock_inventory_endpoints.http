@@ -1,0 +1,80 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXIiOiJndWlsaGVybWVsdWFucHJvZHV0b3IxMUBwbS5tZSIsInJvbGUiOiJwcm9kdXRvciIsImlhdCI6MTc0ODg5MjAyOCwiZXhwIjoxNzQ4ODk1NjI4fQ.SQiwUB9wSbBav-9nlkDiffzriGoCYpuZf5iEHD5sWb8
+
+### Operações de Estoque (Stock)
+
+### Listar todos os estoques
+GET http://localhost:3000/stock
+
+### Buscar estoque pelo ID
+GET http://localhost:3000/stock/1
+
+### Atualizar informações de um estoque
+PATCH http://localhost:3000/stock/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "currentTotalQuantity": 100
+}
+
+### Remover um estoque
+DELETE http://localhost:3000/stock/1
+Authorization: Bearer {{token}}
+
+### Buscar estoque de uma loja específica
+GET http://localhost:3000/store/1/stock
+
+### Operações de Itens de Inventário
+
+POST http://localhost:3000/store/1/inventory-items
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "productId": 2,
+  "quantity": 50
+}
+
+### Listar todos os itens no estoque de uma loja
+GET http://localhost:3000/store/1/inventory-items
+
+
+### Obter resumo do estoque de uma loja
+GET http://localhost:3000/store/1/inventory-items/summary
+
+### Listar produtos sem estoque de uma loja
+GET http://localhost:3000/store/1/inventory-items/out-of-stock
+
+### Buscar item de inventário específico pelo ID do produto
+GET http://localhost:3000/store/1/inventory-items/products/2
+
+### Atualizar informações de um item no inventário
+PATCH http://localhost:3000/store/1/inventory-items/products/2
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "quantity": 30
+}
+
+### Diminuir a quantidade de um produto no estoque
+PATCH http://localhost:3000/store/1/inventory-items/products/2/decrease
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "quantity": 5
+}
+
+### Aumentar a quantidade de um produto no estoque
+PATCH http://localhost:3000/store/1/inventory-items/products/2/increase
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "quantity": 10
+}
+
+### Remover um produto do estoque
+DELETE http://localhost:3000/store/1/inventory-items/products/2
+Authorization: Bearer {{token}}

@@ -1,0 +1,39 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInVzZXIiOiJndWlsaGVybWVsdWFuQHBtLm1lIiwicm9sZSI6ImNsaWVudGUiLCJpYXQiOjE3NDkwNTUwNDQsImV4cCI6MTc0OTA1ODY0NH0.4JUUHRDV_eGKX8wZJhleBECpEfPAegJwRu39K2MZm9E
+@baseurl=http://localhost:3000
+
+### 1. Criar um endereço para o cliente logado
+POST {{baseurl}}/address
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "street": "Rua das Flores",
+  "number": "123",
+  "complement": "Apto 101",
+  "city": "São Paulo",
+  "state": "SP",
+  "postalCode": "01234-567"
+}
+
+### 2. Buscar o endereço do cliente logado
+GET {{baseurl}}/address
+Authorization: Bearer {{token}}
+
+### 4. Atualizar endereço usando o ID passado na URL
+# Nota: Este endpoint usa o ID do usuário logado, não o ID da URL
+PATCH {{baseurl}}/address
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "street": "Avenida Paulista",
+  "number": "1500",
+  "complement": "Sala 203",
+  "city": "São Paulo",
+  "state": "SP",
+  "postalCode": "01310-200"
+}
+
+### 5. Remover um endereço por ID
+DELETE {{baseurl}}/address
+Authorization: Bearer {{token}}

@@ -1,0 +1,319 @@
+@baseurl=http://localhost:3000
+@token_lojista=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXIiOiJwcm9kdXRvcjNAbWFpbC5jb20iLCJyb2xlIjoicHJvZHV0b3IiLCJpYXQiOjE3NDkyMTkyODYsImV4cCI6MTc0OTIyMjg4Nn0.dP9VWg1ibRG3p0ZI14FhnDAHQluTWY0We3V7ai3ht_I
+@token_client=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInVzZXIiOiJjbGllbnRlM0BtYWlsLmNvbSIsInJvbGUiOiJjbGllbnRlIiwiaWF0IjoxNzQ5MjE5Mzg1LCJleHAiOjE3NDkyMjI5ODV9.QtDgA1BpaNn_mFIrytJmTziBL7ysC3nytL7mc-0imLU
+
+
+### Fluxo de Auth
+
+### Registro
+### Cliente
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Cliente 1",
+  "email": "cliente1@email.com",
+  "password": "cliente123",
+  "role": "cliente",
+  "cpf": "123456678177"
+}
+
+### Produtor
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Produtor 1",
+  "email": "produto1@mail.com",
+  "password": "produtor123",
+  "role": "produtor",
+  "cnpj": "1234566781711127"
+}
+
+### Login
+
+POST {{baseurl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "produto1@mail.com",
+  "password": "produtor123"
+}
+
+### Fluxo do Lojista (Produtor)
+
+### Realizar cadastro do tipo Produtor
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "produtor 3",
+  "email": "produtor3@mail.com",
+  "password": "produtor123",
+  "role": "produtor",
+  "cnpj": "1234566781711112d7"
+}
+
+### Realizar login
+POST {{baseurl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "produtor3@mail.com",
+  "password": "produtor123"
+}
+
+### Manter Loja - Para ter acesso a essas rotas, o usuário deve ser um produtor autenticado.
+### Acima estão as rotas para registro e login de produtor.
+
+### Criar uma nova Loja
+POST {{baseurl}}/store
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "name": "Zé",
+  "description": "Frutas e verduras frescas direto da horta.",
+  "producerProfileId": 1
+}
+
+### Atualizar uma loja
+PATCH {{baseurl}}/store/1
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "name": "Loja do Zé Atualizada",
+  "description": "As melhores frutas e verduras da região."
+}
+
+### Manter produtos
+
+### Criar um novo produto
+POST {{baseurl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "name": "Banana",
+  "description": "Banana orgânica e fresca",
+  "price": 5.99,
+  "imageUrl": "https://example.com/images/maca_gala.jpg",
+  "rating": 4.5,
+  "category": "Fruta",
+  "storeId": 1
+}
+###
+POST {{baseurl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "name": "Maça",
+  "description": "Maça orgânica e fresca>",
+  "price": 1.66,
+  "imageUrl": "https://example.com/images/maca_gala.jpg",
+  "rating": 4.5,
+  "category": "Fruta",
+  "storeId": 1
+}
+
+### Buscar produtos com filtros (name)
+GET {{baseurl}}/products?name=M
+
+### Adicionar produto ao estoque
+POST {{baseurl}}/store/1/inventory-items
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "productId": 1,
+  "quantity": 50
+}
+
+### Listar todos os itens no estoque de uma loja
+GET {{baseurl}}/store/1/inventory-items
+Authorization: Bearer {{token_lojista}}
+
+
+### Obter resumo do estoque de uma loja
+GET {{baseurl}}/store/1/inventory-items/summary
+Authorization: Bearer {{token_lojista}}
+
+### Listar produtos sem estoque de uma loja
+GET {{baseurl}}/store/1/inventory-items/out-of-stock
+Authorization: Bearer {{token_lojista}}
+
+### Buscar item de inventário específico pelo ID do produto
+GET {{baseurl}}/store/1/inventory-items/products/1
+Authorization: Bearer {{token_lojista}}
+
+### Diminuir a quantidade de um produto no estoque
+PATCH {{baseurl}}/store/1/inventory-items/products/1/decrease
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "quantity": 5
+}
+
+### Aumentar a quantidade de um produto no estoque
+PATCH {{baseurl}}/store/1/inventory-items/products/1/increase
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "quantity": 10
+}
+
+### Remover um produto do estoque
+DELETE {{baseurl}}/store/1/inventory-items/products/1
+Authorization: Bearer {{token_lojista}}
+
+### Fluxo de Compra - Para o cliente realizar uma compra, ele deve estar autenticado.
+
+### Registro de cliente
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Cliente 3",
+  "email": "cliente3@mail.com",
+  "password": "cliente123",
+  "role": "cliente",
+  "cpf": "1234566781727"
+}
+
+### Login
+POST {{baseurl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "cliente3@mail.com",
+  "password": "cliente123"
+}
+
+### Buscar produtos
+GET {{baseurl}}/products
+
+### Detalhe do produto
+GET {{baseurl}}/products/1
+
+### Adicionar ao carinho
+POST {{baseurl}}/cart/add
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+### Ver o carrinho
+
+GET {{baseurl}}/cart
+Authorization: Bearer {{token_client}}
+
+### Adicionar endereço de entrega para o client logado
+POST {{baseurl}}/address
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "street": "Rua das Flores",
+  "number": "123",
+  "complement": "Apto 101",
+  "city": "São Paulo",
+  "state": "SP",
+  "postalCode": "01234-567"
+}
+
+### Pagamento
+
+POST {{baseurl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "paymentMethod": "CREDIT_CARD"
+}
+
+### Status
+GET {{baseurl}}/orders
+Authorization: Bearer {{token_client}}
+
+### Avaliar comprar
+POST {{baseurl}}/reviews
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "orderId": 1,
+  "rating": 5,
+  "comment": "Ótimo produto, chegou muito bem embalado!"
+}
+
+### Listar avaliações do usuário authenticado
+GET {{baseurl}}/reviews
+Authorization: Bearer {{token_client}}
+
+### Atulizar uma avaliação
+PATCH {{baseurl}}/reviews/1
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "rating": 4,
+  "comment": "Produto bom, mas poderia ser melhor."
+}
+
+### Deletar uma avaliação
+DELETE {{baseurl}}/reviews/1
+Authorization: Bearer {{token_client}}
+
+### Fluxo do Cliente - Para o cliente realizar suas ações, ele deve estar autenticado.
+
+### Registro de cliente
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Cliente 3",
+  "email": "cliente3@mail.com",
+  "password": "cliente123",
+  "role": "cliente",
+  "cpf": "1234566781727"
+}
+
+### Login
+POST {{baseurl}}/auth/loginw
+Content-Type: application/json
+
+{
+  "email": "cliente3@mail.com",
+  "password": "cliente123"
+}
+
+### Favoritos
+
+### Adicionar aos favoritos
+POST {{baseurl}}/favorites
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "productId": 1
+}
+
+### Listar favoritos do usuário Autenticado
+GET {{baseurl}}/favorites
+Authorization: Bearer {{token_client}}
+
+### Deletar favorito
+DELETE {{baseurl}}/favorites/1
+Authorization: Bearer {{token_client}}
+Content-Type: application/json
+
+### Historico de compras
+GET {{baseurl}}/orders
+Authorization: Bearer {{token_client}}

@@ -1,0 +1,52 @@
+@baseurl=http://localhost:3000
+
+### Fluxo de autenticação e cadastro
+
+### Registro
+
+### Cliente
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluan@pm.me",
+  "password": "teste123456",
+  "role": "cliente",
+  "cpf": "123456678177"
+}
+
+### Produtor
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluanprodutor11@pm.me",
+  "password": "teste123456",
+  "role": "produtor",
+  "cnpj": "1234566781711127"
+}
+
+### Entregador
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "guilhermeluan@gmail.com",
+  "password": "teste123456",
+  "role": "entregador",
+  "cpf": "123123121",
+  "vehicleType": "BICYCLE"
+}
+
+### Login
+
+POST {{baseurl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "guilhermeluanprodutor11@pm.me",
+  "password": "teste123456"
+}
