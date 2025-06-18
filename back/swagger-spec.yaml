@@ -1,0 +1,1487 @@
+openapi: 3.0.0
+paths:
+  /user:
+    post:
+      description: Cria um novo usuário no sistema (restrito a administradores)
+      operationId: UserController_create
+      parameters: []
+      requestBody:
+        required: true
+        description: Dados do usuário a ser criado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+            examples:
+              clientUser:
+                summary: Cliente
+                description: Exemplo de criação de usuário cliente
+                value:
+                  name: João Silva
+                  email: joao.silva@exemplo.com
+                  password: senha12345
+                  role: cliente
+                  cpf: 123.456.789-00
+              producerUser:
+                summary: Produtor
+                description: Exemplo de criação de usuário produtor
+                value:
+                  name: Fazenda Orgânica Ltda
+                  email: contato@fazendaorganica.com
+                  password: senha54321
+                  role: produtor
+                  cnpj: 12.345.678/0001-90
+              courierUser:
+                summary: Entregador
+                description: Exemplo de criação de usuário entregador
+                value:
+                  name: Carlos Entregas
+                  email: carlos@entregas.com
+                  password: senha98765
+                  role: entregador
+                  cpf: 987.654.321-00
+                  vehicleType: MOTORCYCLE
+                  cnh: '12345678900'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para criar outros usuários
+        '409':
+          description: E-mail já cadastrado
+      security: &ref_0
+        - JWT-auth: []
+      summary: Criar um novo usuário
+      tags: &ref_1
+        - Users
+    get:
+      description: Retorna todos os usuários ou busca por email específico
+      operationId: UserController_getUsers
+      parameters:
+        - name: email
+          required: false
+          in: query
+          description: Email para busca de usuário específico
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de usuários ou usuário específico encontrado
+        '401':
+          description: Usuário não autenticado
+        '404':
+          description: Usuário não encontrado (quando busca por email)
+      security: *ref_0
+      summary: Buscar usuários
+      tags: *ref_1
+  /user/{id}:
+    get:
+      description: Retorna um usuário específico pelo seu ID
+      operationId: UserController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do usuário
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuário encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Usuário não autenticado
+        '404':
+          description: Usuário não encontrado
+      security: *ref_0
+      summary: Buscar usuário por ID
+      tags: *ref_1
+    patch:
+      description: Atualiza os dados de um usuário existente
+      operationId: UserController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do usuário
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: Dados para atualização do usuário
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+            examples:
+              updateEmail:
+                summary: Atualizar email
+                description: Atualização apenas do email do usuário
+                value:
+                  email: novo.email@exemplo.com
+              updatePassword:
+                summary: Atualizar senha
+                description: Atualização da senha do usuário
+                value:
+                  password: novaSenha123
+              updateMultipleFields:
+                summary: Atualizar vários campos
+                description: Atualização de múltiplos campos do usuário
+                value:
+                  email: novo.email@exemplo.com
+                  password: novaSenha123
+      responses:
+        '200':
+          description: Usuário atualizado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '404':
+          description: Usuário não encontrado
+      security: *ref_0
+      summary: Atualizar usuário
+      tags: *ref_1
+    delete:
+      description: Remove um usuário existente
+      operationId: UserController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do usuário
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuário removido com sucesso
+        '401':
+          description: Usuário não autenticado
+        '404':
+          description: Usuário não encontrado
+      security: *ref_0
+      summary: Remover usuário
+      tags: *ref_1
+  /auth/register:
+    post:
+      description: Cria uma nova conta de usuário no sistema
+      operationId: AuthController_register
+      parameters: []
+      requestBody:
+        required: true
+        description: Dados para registro de novo usuário
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+            examples:
+              clientExample:
+                summary: Cliente
+                description: Exemplo de registro de cliente
+                value:
+                  name: Maria Silva
+                  email: maria.silva@exemplo.com
+                  password: senha12345
+                  role: cliente
+                  cpf: 123.456.789-00
+              producerExample:
+                summary: Produtor Rural
+                description: Exemplo de registro de produtor rural
+                value:
+                  name: Sítio Boa Colheita
+                  email: contato@sitioboa.com
+                  password: senha54321
+                  role: produtor
+                  cnpj: 12.345.678/0001-90
+              courierExample:
+                summary: Entregador
+                description: Exemplo de registro de entregador
+                value:
+                  name: Pedro Entregas
+                  email: pedro@entregas.com
+                  password: senha98765
+                  role: entregador
+                  cpf: 987.654.321-00
+                  vehicleType: MOTORCYCLE
+                  cnh: '12345678900'
+      responses:
+        '201':
+          description: Usuário registrado com sucesso
+        '400':
+          description: Dados inválidos ou incompletos
+        '409':
+          description: Email já registrado
+      summary: Registrar um novo usuário
+      tags: &ref_2
+        - Autenticação
+  /auth/login:
+    post:
+      description: Faz login de um usuário e retorna um token JWT
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        description: Credenciais de login
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+            examples:
+              standardLogin:
+                summary: Login padrão
+                description: Exemplo de login com e-mail e senha
+                value:
+                  email: usuario@exemplo.com
+                  password: senha123
+      responses:
+        '200':
+          description: Login bem-sucedido, token JWT retornado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                    example: 1
+                  email:
+                    type: string
+                    example: usuario@exemplo.com
+                  name:
+                    type: string
+                    example: Usuário Teste
+                  role:
+                    type: string
+                    example: CLIENT
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Formato de dados inválido
+        '401':
+          description: Credenciais inválidas
+      summary: Autenticar usuário
+      tags: *ref_2
+  /store:
+    post:
+      description: Cria uma nova loja para o produtor autenticado
+      operationId: StoreController_create
+      parameters: []
+      requestBody:
+        required: true
+        description: Dados da loja a ser criada
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStoreDto'
+            examples:
+              storeExample:
+                summary: Exemplo de loja
+                description: Dados básicos para criação de loja
+                value:
+                  name: Fazenda Orgânica
+                  description: Produtos orgânicos cultivados com amor
+                  producerProfileId: 1
+              storeWithStockExample:
+                summary: Loja com estoque inicial
+                description: Criar loja com configuração inicial de estoque
+                value:
+                  name: Horta Feliz
+                  description: Produtos frescos direto da horta
+                  producerProfileId: 1
+                  stock:
+                    name: Estoque principal
+                    description: Estoque inicial da Horta Feliz
+      responses:
+        '201':
+          description: Loja criada com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para criar lojas
+      security:
+        - JWT-auth: []
+      summary: Criar uma nova loja
+      tags: &ref_3
+        - Store
+    get:
+      description: Retorna uma lista com todas as lojas cadastradas
+      operationId: StoreController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: Lista de lojas retornada com sucesso
+      summary: Listar todas as lojas
+      tags: *ref_3
+  /store/{id}:
+    get:
+      description: Retorna os dados de uma loja específica
+      operationId: StoreController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Loja encontrada com sucesso
+        '404':
+          description: Loja não encontrada
+      summary: Obter loja por ID
+      tags: *ref_3
+    patch:
+      description: Atualiza os dados de uma loja específica
+      operationId: StoreController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Dados para atualização da loja
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStoreDto'
+            examples:
+              updateInfoExample:
+                summary: Atualizar informações básicas
+                description: Atualizar nome e descrição da loja
+                value:
+                  name: Novo Nome da Loja
+                  description: Nova descrição da loja atualizada
+              updateRatingExample:
+                summary: Atualizar avaliação
+                description: Atualizar apenas a avaliação da loja
+                value:
+                  rating: 4.5
+      responses:
+        '200':
+          description: Loja atualizada com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para atualizar esta loja
+        '404':
+          description: Loja não encontrada
+      security:
+        - JWT-auth: []
+      summary: Atualizar loja
+      tags: *ref_3
+    delete:
+      description: Remove uma loja específica
+      operationId: StoreController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Loja removida com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para remover esta loja
+        '404':
+          description: Loja não encontrada
+      security:
+        - JWT-auth: []
+      summary: Remover loja
+      tags: *ref_3
+  /store/{storeId}/products:
+    get:
+      description: Retorna todos os produtos disponíveis em uma loja específica
+      operationId: StoreController_findProductsByStoreId
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Lista de produtos retornada com sucesso
+        '404':
+          description: Loja não encontrada
+      summary: Listar produtos de uma loja
+      tags: *ref_3
+  /store/{id}/stock:
+    get:
+      description: Retorna informações do estoque de uma loja específica
+      operationId: StoreController_getStock
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Estoque encontrado com sucesso
+        '404':
+          description: Loja ou estoque não encontrado
+      summary: Obter estoque da loja
+      tags: *ref_3
+  /store/{storeId}/inventory-items:
+    post:
+      description: Adiciona um produto ao estoque da loja especificada
+      operationId: InventoryItemsController_addProduct
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Dados do item de estoque a ser adicionado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInventoryItemDto'
+            examples:
+              newItem:
+                summary: Novo item de estoque
+                description: Adiciona um produto ao estoque com quantidade específica
+                value:
+                  productId: 1
+                  quantity: 50
+      responses:
+        '201':
+          description: Produto adicionado ao estoque com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para gerenciar o estoque
+        '404':
+          description: Loja ou produto não encontrado
+      security: &ref_4
+        - JWT-auth: []
+      summary: Adicionar produto ao estoque
+      tags: &ref_5
+        - Inventory Items
+    get:
+      description: Retorna todos os itens do inventário da loja especificada
+      operationId: InventoryItemsController_getInventory
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Inventário retornado com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para visualizar o inventário
+        '404':
+          description: Loja não encontrada
+      security: *ref_4
+      summary: Listar inventário da loja
+      tags: *ref_5
+  /store/{storeId}/inventory-items/summary:
+    get:
+      description: Retorna um resumo do estoque da loja especificada
+      operationId: InventoryItemsController_getStockSummary
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Resumo do estoque retornado com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para visualizar o resumo do estoque
+        '404':
+          description: Loja não encontrada
+      security: *ref_4
+      summary: Obter resumo do estoque
+      tags: *ref_5
+  /store/{storeId}/inventory-items/out-of-stock:
+    get:
+      description: Retorna todos os produtos que estão com estoque zerado
+      operationId: InventoryItemsController_getOutOfStockItems
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Lista de produtos em falta retornada com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para visualizar produtos em falta
+        '404':
+          description: Loja não encontrada
+      security: *ref_4
+      summary: Listar produtos em falta
+      tags: *ref_5
+  /store/{storeId}/inventory-items/products/{productId}:
+    get:
+      description: Retorna informações de estoque para um produto específico
+      operationId: InventoryItemsController_getInventoryItemByProduct
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+        - name: productId
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Item de inventário encontrado
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para acessar este recurso
+        '404':
+          description: Loja ou produto não encontrado no inventário
+      security: *ref_4
+      summary: Obter item do inventário por produto
+      tags: *ref_5
+    patch:
+      description: Atualiza as informações de estoque para um produto específico
+      operationId: InventoryItemsController_updateInventoryItem
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+        - name: productId
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Dados para atualização do item de inventário
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInventoryItemDto'
+            examples:
+              updateQuantity:
+                summary: Atualizar quantidade
+                description: Atualiza a quantidade em estoque para o produto
+                value:
+                  quantity: 75
+      responses:
+        '200':
+          description: Item de inventário atualizado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para atualizar itens do inventário
+        '404':
+          description: Loja ou produto não encontrado
+      security: *ref_4
+      summary: Atualizar item do inventário
+      tags: *ref_5
+    delete:
+      description: Remove um produto do estoque da loja
+      operationId: InventoryItemsController_removeProduct
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+        - name: productId
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Produto removido do estoque com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para remover produtos do estoque
+        '404':
+          description: Loja ou produto não encontrado
+      security: *ref_4
+      summary: Remover produto do estoque
+      tags: *ref_5
+  /store/{storeId}/inventory-items/products/{productId}/decrease:
+    patch:
+      description: Reduz a quantidade disponível de um produto no estoque
+      operationId: InventoryItemsController_decreaseStock
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+        - name: productId
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Quantidade a ser reduzida
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                  example: 5
+                  description: Quantidade a ser removida do estoque
+      responses:
+        '200':
+          description: Estoque reduzido com sucesso
+        '400':
+          description: Quantidade inválida ou estoque insuficiente
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para alterar o estoque
+        '404':
+          description: Loja ou produto não encontrado
+      security: *ref_4
+      summary: Diminuir quantidade em estoque
+      tags: *ref_5
+  /store/{storeId}/inventory-items/products/{productId}/increase:
+    patch:
+      description: Aumenta a quantidade disponível de um produto no estoque
+      operationId: InventoryItemsController_increaseStock
+      parameters:
+        - name: storeId
+          required: true
+          in: path
+          description: ID da loja
+          schema:
+            type: number
+        - name: productId
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Quantidade a ser adicionada
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                  example: 10
+                  description: Quantidade a ser adicionada ao estoque
+      responses:
+        '200':
+          description: Estoque aumentado com sucesso
+        '400':
+          description: Quantidade inválida
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para alterar o estoque
+        '404':
+          description: Loja ou produto não encontrado
+      security: *ref_4
+      summary: Aumentar quantidade em estoque
+      tags: *ref_5
+  /products:
+    post:
+      description: Cria um novo produto para a loja do produtor autenticado
+      operationId: ProductsController_create
+      parameters: []
+      requestBody:
+        required: true
+        description: Dados do produto a ser criado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDto'
+            examples:
+              vegetable:
+                summary: Produto vegetal
+                description: Exemplo de produto da categoria vegetais
+                value:
+                  name: Alface Crespa
+                  description: Alface crespa fresca, cultivada sem agrotóxicos
+                  price: 3.5
+                  imageUrl: https://exemplo.com/imagens/alface.jpg
+                  rating: 4.8
+                  category: Vegetais
+                  storeId: 1
+              fruit:
+                summary: Produto frutas
+                description: Exemplo de produto da categoria frutas
+                value:
+                  name: Morango Orgânico
+                  description: Morangos orgânicos cultivados na região serrana
+                  price: 12.9
+                  imageUrl: https://exemplo.com/imagens/morango.jpg
+                  rating: 4.5
+                  category: Frutas
+                  storeId: 1
+      responses:
+        '201':
+          description: Produto criado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para criar produtos
+      security:
+        - JWT-auth: []
+      summary: Criar um novo produto
+      tags: &ref_6
+        - Products
+    get:
+      description: Retorna todos os produtos ou filtra por nome
+      operationId: ProductsController_findAllOrFindByName
+      parameters:
+        - name: name
+          required: false
+          in: query
+          description: Nome do produto para filtrar
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de produtos retornada com sucesso
+      summary: Listar produtos
+      tags: *ref_6
+  /products/{id}:
+    get:
+      description: Retorna um produto específico pelo seu ID
+      operationId: ProductsController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Produto encontrado
+        '404':
+          description: Produto não encontrado
+      summary: Buscar produto por ID
+      tags: *ref_6
+    patch:
+      description: Atualiza os dados de um produto existente
+      operationId: ProductsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Dados para atualização do produto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductDto'
+            examples:
+              updatePrice:
+                summary: Atualizar preço
+                description: Atualiza apenas o preço do produto
+                value:
+                  price: 4.25
+              updateDetails:
+                summary: Atualizar detalhes
+                description: Atualiza descrição e imagem do produto
+                value:
+                  description: Nova descrição atualizada do produto
+                  imageUrl: https://exemplo.com/imagens/produto-atualizado.jpg
+              updateMultiple:
+                summary: Atualização completa
+                description: Atualiza múltiplos campos do produto
+                value:
+                  name: Nome atualizado
+                  description: Descrição atualizada
+                  price: 5.99
+                  rating: 4.9
+                  category: Nova Categoria
+      responses:
+        '200':
+          description: Produto atualizado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para atualizar este produto
+        '404':
+          description: Produto não encontrado
+      security:
+        - JWT-auth: []
+      summary: Atualizar produto
+      tags: *ref_6
+    delete:
+      description: Remove um produto existente
+      operationId: ProductsController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do produto
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Produto removido com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para remover este produto
+        '404':
+          description: Produto não encontrado
+      security:
+        - JWT-auth: []
+      summary: Remover produto
+      tags: *ref_6
+  /stock:
+    get:
+      description: Retorna todos os estoques cadastrados no sistema
+      operationId: StockController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: Lista de estoques retornada com sucesso
+      summary: Listar todos os estoques
+      tags: &ref_7
+        - Stock
+  /stock/{id}:
+    get:
+      description: Retorna um estoque específico pelo seu ID
+      operationId: StockController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do estoque
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Estoque encontrado
+        '404':
+          description: Estoque não encontrado
+      summary: Buscar estoque por ID
+      tags: *ref_7
+    patch:
+      description: Atualiza os dados de um estoque existente
+      operationId: StockController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do estoque
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Dados para atualização do estoque
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStockDto'
+            examples:
+              updateCapacity:
+                summary: Atualizar capacidade
+                description: Atualiza a capacidade atual do estoque
+                value:
+                  currentCapacity: 150
+      responses:
+        '200':
+          description: Estoque atualizado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para atualizar este estoque
+        '404':
+          description: Estoque não encontrado
+      security:
+        - JWT-auth: []
+      summary: Atualizar estoque
+      tags: *ref_7
+    delete:
+      description: Remove um estoque existente
+      operationId: StockController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do estoque
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Estoque removido com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para remover este estoque
+        '404':
+          description: Estoque não encontrado
+      security:
+        - JWT-auth: []
+      summary: Remover estoque
+      tags: *ref_7
+  /address:
+    post:
+      description: Cria um novo endereço para o cliente autenticado
+      operationId: AddressController_create
+      parameters: []
+      requestBody:
+        required: true
+        description: Dados do endereço a ser criado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddressDto'
+            examples:
+              residentialAddress:
+                summary: Endereço residencial
+                description: Exemplo de endereço residencial completo
+                value:
+                  street: Rua das Flores
+                  number: '123'
+                  complement: Apto 45, Bloco B
+                  city: São Paulo
+                  state: SP
+                  postalCode: 01234-567
+              commercialAddress:
+                summary: Endereço comercial
+                description: Exemplo de endereço comercial sem complemento
+                value:
+                  street: Avenida Paulista
+                  number: '1000'
+                  city: São Paulo
+                  state: SP
+                  postalCode: 01310-100
+      responses:
+        '201':
+          description: Endereço criado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para criar endereços
+      security: &ref_8
+        - JWT-auth: []
+      summary: Criar um novo endereço
+      tags: &ref_9
+        - Address
+    get:
+      description: Retorna o endereço do cliente autenticado
+      operationId: AddressController_findOne
+      parameters: []
+      responses:
+        '200':
+          description: Endereço encontrado
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para acessar este recurso
+        '404':
+          description: Endereço não encontrado
+      security: *ref_8
+      summary: Buscar endereço do usuário
+      tags: *ref_9
+    patch:
+      description: Atualiza o endereço do cliente autenticado
+      operationId: AddressController_update
+      parameters: []
+      requestBody:
+        required: true
+        description: Dados para atualização do endereço
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAddressDto'
+            examples:
+              updateFullAddress:
+                summary: Atualização completa
+                description: Atualização de todos os campos do endereço
+                value:
+                  street: Rua Nova
+                  number: '456'
+                  complement: Casa
+                  city: Rio de Janeiro
+                  state: RJ
+                  postalCode: 22000-000
+              updatePartialAddress:
+                summary: Atualização parcial
+                description: Atualização apenas de alguns campos
+                value:
+                  complement: Fundos
+                  number: '789'
+      responses:
+        '200':
+          description: Endereço atualizado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para atualizar endereços
+        '404':
+          description: Endereço não encontrado
+      security: *ref_8
+      summary: Atualizar endereço
+      tags: *ref_9
+  /cart:
+    get:
+      operationId: CartController_getCart
+      parameters: []
+      responses:
+        '200':
+          description: Carrinho retornado com sucesso
+      security: &ref_10
+        - bearer: []
+      summary: Obter carrinho do cliente
+      tags: &ref_11
+        - Cart
+  /cart/add:
+    post:
+      operationId: CartController_addToCart
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddToCartDto'
+      responses:
+        '201':
+          description: Produto adicionado com sucesso
+        '404':
+          description: Produto não encontrado
+      security: *ref_10
+      summary: Adicionar produto ao carrinho
+      tags: *ref_11
+  /cart/item/{itemId}:
+    patch:
+      operationId: CartController_updateCartItem
+      parameters:
+        - name: itemId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartItemDto'
+      responses:
+        '200':
+          description: Item atualizado com sucesso
+        '404':
+          description: Item não encontrado
+      security: *ref_10
+      summary: Atualizar quantidade de item no carrinho
+      tags: *ref_11
+    delete:
+      operationId: CartController_removeFromCart
+      parameters:
+        - name: itemId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Item removido com sucesso
+        '404':
+          description: Item não encontrado
+      security: *ref_10
+      summary: Remover item do carrinho
+      tags: *ref_11
+  /cart/clear:
+    delete:
+      operationId: CartController_clearCart
+      parameters: []
+      responses:
+        '200':
+          description: Carrinho limpo com sucesso
+      security: *ref_10
+      summary: Limpar carrinho
+      tags: *ref_11
+  /orders:
+    post:
+      description: Cria um novo pedido para um cliente autenticado
+      operationId: OrdersController_create
+      parameters: []
+      requestBody:
+        required: true
+        description: Dados do pedido a ser criado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderDto'
+            examples:
+              basicOrder:
+                summary: Pedido básico
+                description: Um exemplo de pedido simples
+                value:
+                  paymentMethod: PIX
+                  notes: Entregar no período da tarde, por favor.
+              orderWithoutNotes:
+                summary: Pedido sem observações
+                value:
+                  paymentMethod: CREDIT_CARD
+      responses:
+        '201':
+          description: Pedido criado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para criar pedidos
+      security: &ref_12
+        - JWT-auth: []
+      summary: Criar um novo pedido
+      tags: &ref_13
+        - Orders
+    get:
+      description: Retorna todos os pedidos do cliente autenticado
+      operationId: OrdersController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: Lista de pedidos do cliente
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para visualizar pedidos
+      security: *ref_12
+      summary: Listar pedidos do cliente
+      tags: *ref_13
+  /orders/store:
+    get:
+      description: Retorna todos os pedidos da loja do produtor autenticado
+      operationId: OrdersController_findByStore
+      parameters: []
+      responses:
+        '200':
+          description: Lista de pedidos da loja
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para visualizar pedidos da loja
+      security: *ref_12
+      summary: Listar pedidos da loja
+      tags: *ref_13
+  /orders/{id}:
+    get:
+      description: Retorna um pedido específico pelo seu ID
+      operationId: OrdersController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do pedido
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Pedido encontrado
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para visualizar este pedido
+        '404':
+          description: Pedido não encontrado
+      security: *ref_12
+      summary: Buscar pedido por ID
+      tags: *ref_13
+    patch:
+      description: Atualiza os dados de um pedido existente
+      operationId: OrdersController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do pedido
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Dados para atualização do pedido
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderDto'
+            examples:
+              updateAddress:
+                summary: Atualizar endereço de entrega
+                description: Alterar o endereço de entrega do pedido
+                value:
+                  notes: Novo endereço de entrega
+              updateNotes:
+                summary: Atualizar observações
+                description: Apenas atualizar as observações do pedido
+                value:
+                  notes: Por favor, entregar no período da manhã.
+      responses:
+        '200':
+          description: Pedido atualizado com sucesso
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para atualizar este pedido
+        '404':
+          description: Pedido não encontrado
+      security: *ref_12
+      summary: Atualizar pedido
+      tags: *ref_13
+    delete:
+      description: Remove um pedido existente
+      operationId: OrdersController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do pedido
+          schema:
+            type: number
+      responses:
+        '204':
+          description: Pedido removido com sucesso
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para remover este pedido
+        '404':
+          description: Pedido não encontrado
+      security: *ref_12
+      summary: Remover pedido
+      tags: *ref_13
+  /orders/{id}/status:
+    patch:
+      description: Atualiza o status de um pedido existente (apenas para produtores)
+      operationId: OrdersController_updateStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do pedido
+          schema:
+            type: number
+      requestBody:
+        required: true
+        description: Novo status do pedido
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusDto'
+            examples:
+              processing:
+                summary: Pedido em processamento
+                value:
+                  status: PROCESSING
+              shipped:
+                summary: Pedido enviado
+                value:
+                  status: SHIPPED
+              delivered:
+                summary: Pedido entregue
+                value:
+                  status: DELIVERED
+      responses:
+        '200':
+          description: Status do pedido atualizado com sucesso
+        '400':
+          description: Status inválido
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para atualizar status
+        '404':
+          description: Pedido não encontrado
+      security: *ref_12
+      summary: Atualizar status do pedido
+      tags: *ref_13
+  /orders/{id}/cancel:
+    patch:
+      description: Cancela um pedido existente
+      operationId: OrdersController_cancelOrder
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do pedido
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Pedido cancelado com sucesso
+        '400':
+          description: Pedido não pode ser cancelado (já enviado ou entregue)
+        '401':
+          description: Usuário não autenticado
+        '403':
+          description: Usuário não tem permissão para cancelar este pedido
+        '404':
+          description: Pedido não encontrado
+      security: *ref_12
+      summary: Cancelar pedido
+      tags: *ref_13
+info:
+  title: Ze da Horta API
+  description: API documentation for the NestJS application
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    JWT-auth:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+      name: JWT
+      description: Insira seu token JWT
+      in: header
+  schemas:
+    RegisterDto:
+      type: object
+      properties: {}
+    UpdateUserDto:
+      type: object
+      properties: {}
+    User:
+      type: object
+      properties: {}
+    LoginDto:
+      type: object
+      properties: {}
+    CreateStoreDto:
+      type: object
+      properties: {}
+    UpdateStoreDto:
+      type: object
+      properties: {}
+    CreateInventoryItemDto:
+      type: object
+      properties: {}
+    UpdateInventoryItemDto:
+      type: object
+      properties: {}
+    CreateProductDto:
+      type: object
+      properties: {}
+    UpdateProductDto:
+      type: object
+      properties: {}
+    CreateStockDto:
+      type: object
+      properties: {}
+    UpdateStockDto:
+      type: object
+      properties: {}
+    CreateAddressDto:
+      type: object
+      properties: {}
+    UpdateAddressDto:
+      type: object
+      properties: {}
+    AddToCartDto:
+      type: object
+      properties:
+        productId:
+          type: number
+          description: ID do produto a ser adicionado ao carrinho
+          example: 1
+        quantity:
+          type: number
+          description: Quantidade do produto
+          example: 2
+          minimum: 1
+      required:
+        - productId
+        - quantity
+    UpdateCartItemDto:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: Nova quantidade do item
+          example: 3
+          minimum: 1
+      required:
+        - quantity
+    CreateOrderDto:
+      type: object
+      properties: {}
+    UpdateOrderDto:
+      type: object
+      properties: {}
+    UpdateOrderStatusDto:
+      type: object
+      properties: {}

@@ -1,0 +1,51 @@
+@token_client=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInVzZXIiOiJndWlsaGVybWVsdWFuMTFAcG0ubWUiLCJyb2xlIjoiY2xpZW50ZSIsImlhdCI6MTc0OTIxNzk4MywiZXhwIjoxNzQ5MjIxNTgzfQ.KnGi_4IvFZlZXwpVgX4GBfHsWK8BJ51hlxiPySXnL0A
+@token_producer=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsInVzZXIiOiJndWlsaGVybWVsdWFucHJvZHV0b3IxMUBwbS5tZSIsInJvbGUiOiJwcm9kdXRvciIsImlhdCI6MTc0OTIxODc2NCwiZXhwIjoxNzQ5MjIyMzY0fQ.vzdl_HtriksV4n6eOtIMbnb8rMTSYa79dc4O6AoDC_U
+@baseurl=http://localhost:3000
+
+### 1. Criar um novo pedido a partir do carrinho
+POST {{baseurl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "paymentMethod": "CREDIT_CARD"
+}
+
+### 2. Listar pedidos do cliente logado
+GET {{baseurl}}/orders
+Authorization: Bearer {{token_client}}
+
+### 3. Listar pedidos da loja do produtor logado
+GET {{baseurl}}/orders/store
+Authorization: Bearer {{token_producer}}
+
+### 4. Buscar detalhes de um pedido específico
+GET {{baseurl}}/orders/1
+Authorization: Bearer {{token_client}}
+
+### 5. Atualizar endereço de entrega do pedido
+PATCH {{baseurl}}/orders/1
+Content-Type: application/json
+Authorization: Bearer {{token_client}}
+
+{
+  "notes": "Entregar no portão"
+}
+
+### 6. Atualizar status do pedido (apenas produtor)
+PATCH {{baseurl}}/orders/2/status
+Content-Type: application/json
+Authorization: Bearer {{token_producer}}
+
+{
+  "status": "CONFIRMED"
+}
+
+### 7. Cancelar pedido
+PATCH {{baseurl}}/orders/1/cancel
+Authorization: Bearer {{token_client}}
+
+### 8. Remover pedido (apenas pedidos pendentes)
+DELETE {{baseurl}}/orders/1
+Authorization: Bearer {{token_client}}
+

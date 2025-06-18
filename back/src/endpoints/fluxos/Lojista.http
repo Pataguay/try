@@ -1,0 +1,118 @@
+@token_lojista=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsInVzZXIiOiJwcm9kdXRvckBnbWFpbC5jb20iLCJyb2xlIjoicHJvZHV0b3IiLCJpYXQiOjE3NDkwNzE5NDUsImV4cCI6MTc0OTA3NTU0NX0.PobuBXiZIXBMGNIqbOFVyGtcc6iOWT7pT6I8u5wkySo
+@baseurl=localhost:3000
+
+### Realizar cadastro do tipo Produtor
+POST {{baseurl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Guilherme Luan",
+  "email": "produtor@gmail.com",
+  "password": "teste123456",
+  "role": "produtor",
+  "cnpj": "123456678171112d7"
+}
+
+### Realizar login
+POST {{baseurl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "produtor@gmail.com",
+  "password": "teste123456"
+}
+
+
+
+### Manter Loja - Para ter acesso a essas rotas, o usuário deve ser um produtos autenticado.
+### Acima estão as rotas para registro e login de produtor.
+
+### Criar uma nova Loja
+POST {{baseurl}}/store
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "name": "Zé",
+  "description": "Frutas e verduras frescas direto da horta.",
+  "producerProfileId": 1
+}
+
+### Atualizar uma loja
+PATCH {{baseurl}}/store/1
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "name": "Loja do Zé Atualizada",
+  "description": "As melhores frutas e verduras da região."
+}
+
+### Manter produtos
+
+### Criar um novo produto
+POST {{baseurl}}/products
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "name": "Banana 2",
+  "description": "Banana orgânica e fresca",
+  "price": 5.99,
+  "imageUrl": "https://example.com/images/maca_gala.jpg",
+  "rating": 4.5,
+  "category": "Fruta",
+  "storeId": 1
+}
+
+### Buscar produtos com filtros (name)
+GET {{baseurl}}/products?name=Ba
+
+### Adicionar produto ao estoque
+POST {{baseurl}}/store/1/inventory-items
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "productId": 1,
+  "quantity": 50
+}
+
+### Listar todos os itens no estoque de uma loja
+GET {{baseurl}}/store/1/inventory-items
+Authorization: Bearer {{token_lojista}}
+
+
+### Obter resumo do estoque de uma loja
+GET {{baseurl}}/store/1/inventory-items/summary
+Authorization: Bearer {{token_lojista}}
+
+### Listar produtos sem estoque de uma loja
+GET {{baseurl}}/store/1/inventory-items/out-of-stock
+Authorization: Bearer {{token_lojista}}
+
+### Buscar item de inventário específico pelo ID do produto
+GET {{baseurl}}/store/1/inventory-items/products/1
+Authorization: Bearer {{token_lojista}}
+
+### Diminuir a quantidade de um produto no estoque
+PATCH {{baseurl}}/store/1/inventory-items/products/1/decrease
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "quantity": 5
+}
+
+### Aumentar a quantidade de um produto no estoque
+PATCH {{baseurl}}/store/1/inventory-items/products/1/increase
+Content-Type: application/json
+Authorization: Bearer {{token_lojista}}
+
+{
+  "quantity": 10
+}
+
+### Remover um produto do estoque
+DELETE {{baseurl}}/store/1/inventory-items/products/1
+Authorization: Bearer {{token_lojista}}

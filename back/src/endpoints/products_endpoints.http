@@ -1,0 +1,43 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXIiOiJndWlsaGVybWVsdWFucHJvZHV0b3IxMUBwbS5tZSIsInJvbGUiOiJwcm9kdXRvciIsImlhdCI6MTc0ODg5NjA3NiwiZXhwIjoxNzQ4ODk5Njc2fQ.uD5mWEWUveDKU0lEWiOFGXxfO5dg8U-RY0KawB5JWsA
+
+### Criar um novo produto
+
+
+POST http://localhost:3000/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Banana 2",
+  "description": "Banana orgânica e fresca",
+  "price": 5.99,
+  "imageUrl": "https://example.com/images/maca_gala.jpg",
+  "rating": 4.5,
+  "category": "Fruta",
+  "storeId": 1
+}
+
+### Buscar todos os produtos
+GET http://localhost:3000/products
+
+### Buscar um produto pelo ID
+GET http://localhost:3000/products/1
+
+### Buscar produtos com filtros (name)
+GET http://localhost:3000/products?name=Ba
+
+### Atualizar um produto
+PATCH http://localhost:3000/products/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Maçã Fuji",
+  "price": 6.50
+}
+
+### Deletar um produto
+DELETE http://localhost:3000/products/1
+
+### Buscar produtos de uma loja pelo ID da loja
+GET http://localhost:3000/store/1/products

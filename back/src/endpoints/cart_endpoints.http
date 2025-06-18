@@ -1,0 +1,42 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInVzZXIiOiJndWlsaGVybWVsdWFuMTFAcG0ubWUiLCJyb2xlIjoiY2xpZW50ZSIsImlhdCI6MTc0OTIxNzk4MywiZXhwIjoxNzQ5MjIxNTgzfQ.KnGi_4IvFZlZXwpVgX4GBfHsWK8BJ51hlxiPySXnL0A
+@baseurl=http://localhost:3000
+
+### Adicionar um produto ao carrinho
+
+POST {{baseurl}}/cart/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+### Buscar o carrinho do cliente
+
+GET {{baseurl}}/cart
+Authorization: Bearer {{token}}
+
+### Atualizar a quantidade de um produto no carrinho
+
+PATCH {{baseurl}}/cart/item/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 1
+}
+
+### Remover item do carrinho
+
+DELETE {{baseurl}}/cart/item/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 1
+}
+
+### Limpar o carrinho
+DELETE {{baseurl}}/cart/clear
+Authorization: Bearer {{token}}
